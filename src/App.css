@@ -1,38 +1,198 @@
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+  padding: 2rem 0;
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: 300;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.App-main {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.format-section {
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.format-section h2 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.format-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  gap: 1rem;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  flex-wrap: wrap;
+}
+
+.format-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  min-width: 150px;
 }
 
-.App-link {
-  color: #61dafb;
+.format-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+.format-btn.active {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: white;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+.action-section {
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  min-width: 150px;
+}
+
+.get-data-btn {
+  background: linear-gradient(45deg, #4CAF50, #45a049);
+  color: white;
+  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+}
+
+.get-data-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+}
+
+.get-data-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.download-btn {
+  background: linear-gradient(45deg, #2196F3, #1976D2);
+  color: white;
+  box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);
+}
+
+.download-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(33, 150, 243, 0.6);
+}
+
+.download-btn:disabled {
+  background: #666;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.6;
+}
+
+.output-section {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.output-section h2 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.output-textbox {
+  width: 100%;
+  min-height: 300px;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+  backdrop-filter: blur(10px);
+}
+
+.output-textbox:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+.output-textbox::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .App-header h1 {
+    font-size: 2rem;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .App-main {
+    padding: 1rem;
+  }
+  
+  .format-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .format-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .action-section {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .action-btn {
+    width: 100%;
+    max-width: 250px;
   }
 }
