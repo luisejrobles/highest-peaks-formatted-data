@@ -1,22 +1,52 @@
 import React, { useState } from 'react';
 import './App.css';
 
-// Try different import approaches
+// Import the prompt concatenation function
 let getPromptForFormat: any;
 try {
   const promptsModule = require('../prompts/main.js');
   getPromptForFormat = promptsModule.getPromptForFormat;
   console.log('Prompts module loaded successfully:', promptsModule);
+  console.log('Available exports:', Object.keys(promptsModule));
 } catch (error) {
   console.error('Failed to load prompts module:', error);
-  // Fallback function
-  getPromptForFormat = (format: string) => {
-    const main_prompt = "Give the list of the 20 highest peaks in latin america. Name, Altitude as m.s.n.m (meters above sea level), and Location as State, Country. Output data";
-    return main_prompt + " in " + format + " format";
+  // Fallback function that concatenates main_prompt with format
+  getPromptForFormat = (format: string, location: string) => {
+    const locationPrompts = {
+      mexico: "List the 20 highest peaks in Mexico with: Name, Altitude (m), and Location (State, Mexico).",
+      latinAmerica: "Give the list of the 20 highest peaks in latin america. Name, Altitude as m.s.n.m (meters above sea level), and Location as State, Country. Output data",
+      world: "List the 20 highest peaks in the world with: Name, Altitude (m), and Location (Country)."
+    };
+    
+    const main_prompt = locationPrompts[location as keyof typeof locationPrompts] || locationPrompts.latinAmerica;
+    
+    const formatPrompts = {
+      json: `as the following json format: 
+### Example:
+[
+    {
+        "name": "Cotopaxi",
+        "altitude": "5897 m.s.n.m",
+        "location": "Latacunga, Ecuador"
+    }
+]`,
+      nested: `as the following nested text data format: 
+### Example:
+- name: Cotopaxi
+  altitude: 5897 m.s.n.m
+  location: Latacunga, Ecuador`,
+      yaml: `as the following yaml format: 
+### Example:
+- name: Cotopaxi
+  altitude: 5897 m.s.n.m
+  location: Latacunga, Ecuador`
+    };
+    return `${main_prompt} ${formatPrompts[format as keyof typeof formatPrompts] || ''}`;
   };
 }
 
 type FormatType = 'nested' | 'json' | 'yaml' | null;
+type LocationType = 'mexico' | 'latinAmerica' | 'world';
 
 interface Peak {
   name: string;
@@ -26,6 +56,7 @@ interface Peak {
 
 const App: React.FC = () => {
   const [selectedFormat, setSelectedFormat] = useState<FormatType>(null);
+  const [selectedLocation, setSelectedLocation] = useState<LocationType>('latinAmerica');
   const [outputData, setOutputData] = useState<string>('');
   const [dataRetrieved, setDataRetrieved] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -78,9 +109,18 @@ const App: React.FC = () => {
     setError('');
   };
 
+  const handleLocationSelect = (location: LocationType) => {
+    console.log('Location selected:', location);
+    setSelectedLocation(location);
+    setDataRetrieved(false);
+    setOutputData('');
+    setError('');
+  };
+
   const handleGetData = async () => {
     console.log('Get Data clicked!');
     console.log('Selected format:', selectedFormat);
+    console.log('Selected location:', selectedLocation);
     
     if (!selectedFormat) {
       console.log('No format selected, returning');
@@ -91,9 +131,9 @@ const App: React.FC = () => {
     setError('');
     
     try {
-      console.log('Getting prompt for format:', selectedFormat);
-      const prompt = getPromptForFormat(selectedFormat);
-      console.log('Generated prompt:', prompt);
+      console.log('Getting prompt for format:', selectedFormat, 'and location:', selectedLocation);
+      const prompt = getPromptForFormat(selectedFormat, selectedLocation);
+      console.log('Generated concatenated prompt:', prompt);
       
       const result = await callOpenAI(prompt);
       console.log('OpenAI result:', result);
@@ -145,10 +185,34 @@ const App: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <h1>Highest Peaks Data Formatter</h1>
-        <p>Get the 20 highest peaks in Latin America via OpenAI</p>
+        <p>Get the 20 highest peaks via OpenAI</p>
       </header>
       
       <main className="App-main">
+        <div className="location-section">
+          <h2>Select Location:</h2>
+          <div className="location-buttons">
+            <button
+              className={`location-btn ${selectedLocation === 'mexico' ? 'active' : ''}`}
+              onClick={() => handleLocationSelect('mexico')}
+            >
+              Mexico
+            </button>
+            <button
+              className={`location-btn ${selectedLocation === 'latinAmerica' ? 'active' : ''}`}
+              onClick={() => handleLocationSelect('latinAmerica')}
+            >
+              Latin America
+            </button>
+            <button
+              className={`location-btn ${selectedLocation === 'world' ? 'active' : ''}`}
+              onClick={() => handleLocationSelect('world')}
+            >
+              World
+            </button>
+          </div>
+        </div>
+
         <div className="format-section">
           <h2>Select Output Format:</h2>
           <div className="format-buttons">
@@ -204,7 +268,7 @@ const App: React.FC = () => {
             className="output-textbox"
             value={outputData}
             readOnly
-            placeholder={isLoading ? "Loading data from OpenAI..." : "Select a format and click 'Get Data' to see the formatted output..."}
+            placeholder={isLoading ? "Loading data from OpenAI..." : "Select a location, format and click 'Get Data' to see the formatted output..."}
           />
         </div>
       </main>

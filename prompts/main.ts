@@ -1,5 +1,5 @@
 
-export const main_prompt = `Give the the list of the 20 highest peaks in latin america. Name, Altitude as " 5000 m.s.n.m" (meters above sea level), and Location as "State, Country".`
+export const main_prompt = `Give the the list of the 20 highest peaks in Mexico. Name, Altitude as " 5000 m.s.n.m" (meters above sea level), and Location as "State, Country".`
 export const json_format = `as the following json format: 
 ### Example:
 [
