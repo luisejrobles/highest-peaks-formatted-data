@@ -13,9 +13,9 @@ try {
   // Fallback function that concatenates main_prompt with format
   getPromptForFormat = (format: string, location: string) => {
     const locationPrompts = {
-      mexico: "List the 20 highest peaks in Mexico with: Name, Altitude (m), and Location (State, Mexico).",
-      latinAmerica: "Give the list of the 20 highest peaks in latin america. Name, Altitude as m.s.n.m (meters above sea level), and Location as State, Country. Output data",
-      world: "List the 20 highest peaks in the world with: Name, Altitude (m), and Location (Country)."
+      mexico: "5 highest peaks in Mexico: Name, Altitude (m), Location (State, Mexico).",
+      latinAmerica: "5 highest peaks in Latam: Name, Altitude (m), Location (State, Country).",
+      world: "5 highest peaks in the world with: Name, Altitude (m), and Location (State,Country)."
     };
     
     const main_prompt = locationPrompts[location as keyof typeof locationPrompts] || locationPrompts.latinAmerica;
@@ -185,7 +185,7 @@ const App: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <h1>Highest Peaks Data</h1>
-        <p>Get formatted peak data via OpenAI</p>
+        <p>Get formatted mountain peaks data in the necessary format</p>
       </header>
       
       <main className="App-main">
