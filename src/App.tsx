@@ -13,9 +13,9 @@ try {
   // Fallback function that concatenates main_prompt with format
   getPromptForFormat = (format: string, location: string) => {
     const locationPrompts = {
-      mexico: "5 highest peaks in Mexico: Name, Altitude (m), Location (State, Mexico).",
-      latinAmerica: "5 highest peaks in Latam: Name, Altitude (m), Location (State, Country).",
-      world: "5 highest peaks in the world with: Name, Altitude (m), and Location (State,Country)."
+      mexico: "5 highest Mexico peaks: Name, Alt (m), Location as Country, State.",
+      latinAmerica: "5 highest peaks in Latam: Name, Alt (m), Location as Country, State.",
+      world: "5 highest peaks in the world with: Name, Alt (m), Location as Country, State."
     };
     
     const main_prompt = locationPrompts[location as keyof typeof locationPrompts] || locationPrompts.latinAmerica;
