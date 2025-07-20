@@ -19,6 +19,12 @@
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.App-header p {
+  margin: 0.5rem 0 0 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
 .App-main {
   max-width: 800px;
   margin: 0 auto;
@@ -127,6 +133,31 @@
   opacity: 0.6;
 }
 
+.error-section {
+  margin-bottom: 2rem;
+  background: rgba(244, 67, 54, 0.2);
+  padding: 1.5rem;
+  border-radius: 15px;
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.error-section h3 {
+  margin: 0 0 0.5rem 0;
+  color: #ffcdd2;
+  font-size: 1.2rem;
+}
+
+.error-message {
+  margin: 0;
+  color: #ffcdd2;
+  font-family: 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #f44336;
+}
+
 .output-section {
   background: rgba(255, 255, 255, 0.1);
   padding: 2rem;
@@ -164,6 +195,17 @@
 
 .output-textbox::placeholder {
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* Loading animation */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.get-data-btn:disabled {
+  animation: pulse 1.5s infinite;
 }
 
 /* Responsive design */

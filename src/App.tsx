@@ -1,100 +1,111 @@
 import React, { useState } from 'react';
 import './App.css';
 
+// Try different import approaches
+let getPromptForFormat: any;
+try {
+  const promptsModule = require('../prompts/main.js');
+  getPromptForFormat = promptsModule.getPromptForFormat;
+  console.log('Prompts module loaded successfully:', promptsModule);
+} catch (error) {
+  console.error('Failed to load prompts module:', error);
+  // Fallback function
+  getPromptForFormat = (format: string) => {
+    const main_prompt = "Give the list of the 20 highest peaks in latin america. Name, Altitude as m.s.n.m (meters above sea level), and Location as State, Country. Output data";
+    return main_prompt + " in " + format + " format";
+  };
+}
+
 type FormatType = 'nested' | 'json' | 'yaml' | null;
 
 interface Peak {
   name: string;
-  elevation: number;
+  altitude: string;
   location: string;
-  country: string;
-  firstAscent: number;
 }
 
 const App: React.FC = () => {
   const [selectedFormat, setSelectedFormat] = useState<FormatType>(null);
   const [outputData, setOutputData] = useState<string>('');
   const [dataRetrieved, setDataRetrieved] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
 
-  // Sample peak data
-  const peaksData: Peak[] = [
-    {
-      name: "Mount Everest",
-      elevation: 8848,
-      location: "Mahalangur Himal",
-      country: "Nepal/China",
-      firstAscent: 1953
-    },
-    {
-      name: "K2",
-      elevation: 8611,
-      location: "Baltoro Karakoram",
-      country: "Pakistan/China",
-      firstAscent: 1954
-    },
-    {
-      name: "Kangchenjunga",
-      elevation: 8586,
-      location: "Kangchenjunga Himalaya",
-      country: "Nepal/India",
-      firstAscent: 1955
-    },
-    {
-      name: "Lhotse",
-      elevation: 8516,
-      location: "Mahalangur Himal",
-      country: "Nepal/China",
-      firstAscent: 1956
-    },
-    {
-      name: "Makalu",
-      elevation: 8485,
-      location: "Mahalangur Himal",
-      country: "Nepal/China",
-      firstAscent: 1955
+  const callOpenAI = async (prompt: string): Promise<string> => {
+    console.log('Calling OpenAI with prompt:', prompt);
+    const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+    
+    console.log('API Key exists:', !!apiKey);
+    console.log('API Key is placeholder:', apiKey === 'your_openai_api_key_here');
+    
+    if (!apiKey || apiKey === 'your_openai_api_key_here') {
+      throw new Error('Please set your OpenAI API key in the .env file');
     }
-  ];
 
-  const formatData = (format: FormatType): string => {
-    switch (format) {
-      case 'nested':
-        return peaksData.map(peak => 
-          `${peak.name}\n` +
-          `  Elevation: ${peak.elevation}m\n` +
-          `  Location: ${peak.location}\n` +
-          `  Country: ${peak.country}\n` +
-          `  First Ascent: ${peak.firstAscent}\n`
-        ).join('\n');
-      
-      case 'json':
-        return JSON.stringify(peaksData, null, 2);
-      
-      case 'yaml':
-        // Simple YAML formatting without js-yaml for now
-        return peaksData.map(peak => 
-          `- name: ${peak.name}\n` +
-          `  elevation: ${peak.elevation}\n` +
-          `  location: ${peak.location}\n` +
-          `  country: ${peak.country}\n` +
-          `  firstAscent: ${peak.firstAscent}`
-        ).join('\n');
-      
-      default:
-        return '';
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'user',
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 2000
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
     }
+
+    const data = await response.json();
+    return data.choices[0]?.message?.content || 'No response from OpenAI';
   };
 
   const handleFormatSelect = (format: FormatType) => {
+    console.log('Format selected:', format);
     setSelectedFormat(format);
     setDataRetrieved(false);
     setOutputData('');
+    setError('');
   };
 
-  const handleGetData = () => {
-    if (selectedFormat) {
-      const formattedData = formatData(selectedFormat);
-      setOutputData(formattedData);
+  const handleGetData = async () => {
+    console.log('Get Data clicked!');
+    console.log('Selected format:', selectedFormat);
+    
+    if (!selectedFormat) {
+      console.log('No format selected, returning');
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+    
+    try {
+      console.log('Getting prompt for format:', selectedFormat);
+      const prompt = getPromptForFormat(selectedFormat);
+      console.log('Generated prompt:', prompt);
+      
+      const result = await callOpenAI(prompt);
+      console.log('OpenAI result:', result);
+      
+      setOutputData(result);
       setDataRetrieved(true);
+    } catch (err) {
+      console.error('Error in handleGetData:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+      setDataRetrieved(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -134,6 +145,7 @@ const App: React.FC = () => {
     <div className="App">
       <header className="App-header">
         <h1>Highest Peaks Data Formatter</h1>
+        <p>Get the 20 highest peaks in Latin America via OpenAI</p>
       </header>
       
       <main className="App-main">
@@ -165,9 +177,9 @@ const App: React.FC = () => {
           <button
             className="action-btn get-data-btn"
             onClick={handleGetData}
-            disabled={!selectedFormat}
+            disabled={!selectedFormat || isLoading}
           >
-            Get Data
+            {isLoading ? 'Getting Data...' : 'Get Data'}
           </button>
           
           <button
@@ -179,13 +191,20 @@ const App: React.FC = () => {
           </button>
         </div>
 
+        {error && (
+          <div className="error-section">
+            <h3>Error:</h3>
+            <p className="error-message">{error}</p>
+          </div>
+        )}
+
         <div className="output-section">
           <h2>Output:</h2>
           <textarea
             className="output-textbox"
             value={outputData}
             readOnly
-            placeholder="Select a format and click 'Get Data' to see the formatted output..."
+            placeholder={isLoading ? "Loading data from OpenAI..." : "Select a format and click 'Get Data' to see the formatted output..."}
           />
         </div>
       </main>
