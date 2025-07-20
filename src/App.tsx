@@ -157,15 +157,15 @@ const App: React.FC = () => {
 
     switch (selectedFormat) {
       case 'nested':
-        filename = 'peaks.txt';
+        filename = 'highest_peaks.txt';
         mimeType = 'text/plain';
         break;
       case 'json':
-        filename = 'peaks.json';
+        filename = 'highest_peaks.json';
         mimeType = 'application/json';
         break;
       case 'yaml':
-        filename = 'peaks.yml';
+        filename = 'highest_peaks.yml';
         mimeType = 'text/yaml';
         break;
     }
@@ -184,28 +184,28 @@ const App: React.FC = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <h1>Highest Peaks Data Formatter</h1>
-        <p>Get the 20 highest peaks via OpenAI</p>
+        <h1>Highest Peaks Data</h1>
+        <p>Get formatted peak data via OpenAI</p>
       </header>
       
       <main className="App-main">
-        <div className="location-section">
-          <h2>Select Location:</h2>
+        <div className="section location-section">
+          <h2>Select Location</h2>
           <div className="location-buttons">
             <button
-              className={`location-btn ${selectedLocation === 'mexico' ? 'active' : ''}`}
+              className={`btn btn-secondary location-btn ${selectedLocation === 'mexico' ? 'active' : ''}`}
               onClick={() => handleLocationSelect('mexico')}
             >
               Mexico
             </button>
             <button
-              className={`location-btn ${selectedLocation === 'latinAmerica' ? 'active' : ''}`}
+              className={`btn btn-secondary location-btn ${selectedLocation === 'latinAmerica' ? 'active' : ''}`}
               onClick={() => handleLocationSelect('latinAmerica')}
             >
               Latin America
             </button>
             <button
-              className={`location-btn ${selectedLocation === 'world' ? 'active' : ''}`}
+              className={`btn btn-secondary location-btn ${selectedLocation === 'world' ? 'active' : ''}`}
               onClick={() => handleLocationSelect('world')}
             >
               World
@@ -213,23 +213,23 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="format-section">
-          <h2>Select Output Format:</h2>
+        <div className="section format-section">
+          <h2>Select Output Format</h2>
           <div className="format-buttons">
             <button
-              className={`format-btn ${selectedFormat === 'nested' ? 'active' : ''}`}
+              className={`btn btn-secondary format-btn ${selectedFormat === 'nested' ? 'active' : ''}`}
               onClick={() => handleFormatSelect('nested')}
             >
               Nested Text Data
             </button>
             <button
-              className={`format-btn ${selectedFormat === 'json' ? 'active' : ''}`}
+              className={`btn btn-secondary format-btn ${selectedFormat === 'json' ? 'active' : ''}`}
               onClick={() => handleFormatSelect('json')}
             >
               JSON
             </button>
             <button
-              className={`format-btn ${selectedFormat === 'yaml' ? 'active' : ''}`}
+              className={`btn btn-secondary format-btn ${selectedFormat === 'yaml' ? 'active' : ''}`}
               onClick={() => handleFormatSelect('yaml')}
             >
               YAML
@@ -239,7 +239,7 @@ const App: React.FC = () => {
 
         <div className="action-section">
           <button
-            className="action-btn get-data-btn"
+            className="btn btn-primary get-data-btn"
             onClick={handleGetData}
             disabled={!selectedFormat || isLoading}
           >
@@ -247,7 +247,7 @@ const App: React.FC = () => {
           </button>
           
           <button
-            className="action-btn download-btn"
+            className="btn btn-success download-btn"
             onClick={handleDownload}
             disabled={!dataRetrieved}
           >
@@ -257,13 +257,13 @@ const App: React.FC = () => {
 
         {error && (
           <div className="error-section">
-            <h3>Error:</h3>
+            <h3>Error</h3>
             <p className="error-message">{error}</p>
           </div>
         )}
 
-        <div className="output-section">
-          <h2>Output:</h2>
+        <div className="section output-section">
+          <h2>Output</h2>
           <textarea
             className="output-textbox"
             value={outputData}
